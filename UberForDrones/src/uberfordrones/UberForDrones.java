@@ -115,36 +115,44 @@ public class UberForDrones extends JApplet {
 	    	            "id VARCHAR(32)," +
 	    	    	    "location VARCHAR(32)," +
                             "currentDriver VARCHAR(32)," +
-                            "packageID INTEGER," +
-                            "reciever VARCHAR(32)" +
+                            "packageID VARCHAR(32)" +
 	    	            ")"
 	    	           );
 	    	    stmt.executeUpdate(
                                 "CREATE TABLE PACKAGE (" +
                             "id VARCHAR(32)," +
                             "location VARCHAR(32)," +
-                            "endLocation VARCHAR(32),");
+                            "endLocation VARCHAR(32)," +
+                            "sender VARCHAR(32)," +
+                            "reciever VARCHAR(32)" +
+                            ")"
+                           );
 	    	    stmt.executeUpdate(
 	    	    		"INSERT INTO DRIVER " +
-	    	            "VALUES ('Billy', 'Sacramento', 'Los Angeles'," +
+	    	            "VALUES ('Billy', 'City1', 'City2'," +
                               " '00:00:00', 0.0, 0, 2)," +
-	    	    	    "('Bob', 'Fremont', 'Los Angeles'," +
+	    	    	    "('Bob', 'City2', 'City3'," +
                               " '00:30:00', 0.0, 0, 1)," +
-                            "('Joe', 'Sacramento', 'Fremont'," +
+                            "('Joe', 'City3', 'City1'," +
                               " '00:45:00', 0.0, 0, 3)");
-	 rs = stmt.executeQuery("select * from DRIVER");
-	 while (rs.next()) {
-	         String driverName = rs.getString("name");
-                 String startLoc = rs.getString("startLocation");
-                 String endLoc = rs.getString("endLocation");
-                 java.sql.Time startTime = rs.getTime("startTime");
-                 float balance = rs.getFloat("balance");
-                 int curPkgCount = rs.getInt("currentPackageCount");
-                 int maxPkgCount = rs.getInt("maxPackageCount");
-	         System.out.println(driverName + "\t" + startLoc + "\t" +
-                         endLoc + "\t" + startTime.toString() + "\t" +
-                         balance + "\t" + curPkgCount + "\t" + maxPkgCount);
-	 }
+                    stmt.executeUpdate(
+                              "INSERT INTO DRONE VALUES " +
+                                      "('0', 'City1', NULL, NULL)");
+                    stmt.executeUpdate(
+                              "INSERT INTO PACKAGE VALUES " +
+                                "('pkg1', 'City1', 'City2', 'Jill', 'Sam')," +
+                                "('pkg2', 'City2', 'City3', 'Sam', 'Rose')," +
+                                "('pkg3', 'City3', 'City1', 'Rose', 'Jill')");
+                    stmt.executeUpdate(
+                              "INSERT INTO SENDER VALUES " +
+                                      "('Jill', 'City1')," +
+                                      "('Sam', 'City2')," +
+                                      "('Rose', 'City3')");
+                    stmt.executeUpdate(
+                              "INSERT INTO RECIEVER VALUES " +
+                                      "('Jill', 'City1')," +
+                                      "('Sam', 'City2')," +
+                                      "('Rose', 'City3')");
 	     } catch (SQLException ex) {
 	            // handle any errors
 	            System.out.println("SQLException: " + ex.getMessage());
