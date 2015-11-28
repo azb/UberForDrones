@@ -7,6 +7,11 @@ package uberfordronescontrolapp;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
@@ -41,6 +46,16 @@ public class UberForDronesControlApp extends JApplet {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+       try {
+            // The newInstance() call is a work around for some
+            // broken Java implementations
+
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+        } catch (Exception ex) {
+            // handle the error
+            System.out.println("JDBC driver not found");
+        }
+       
         SwingUtilities.invokeLater(new Runnable() {
             
             @Override
@@ -135,49 +150,89 @@ public class UberForDronesControlApp extends JApplet {
         DroneIDLabel.setText("Drone ID");
         dronesTableGrid.add( DroneIDLabel, 0, 0);
         
+        
+        
+        Connection conn = null;
+	Statement stmt = null;
+        ResultSet rs = null;
+        try {
+	            conn =
+	               DriverManager.getConnection(
+	            		           "jdbc:mysql://localhost:3306/test?" +
+	                               "user=root&password=MYSQL"
+	            		           );
+                    stmt = conn.createStatement();
+                    rs = stmt.executeQuery("SELECT * FROM drone");
+                    int i = 1;
+                    while (rs.next()) {
+                        String id = rs.getString("id");
+	                String location = rs.getString("location");
+	                String currentDriver = rs.getString("currentDriver");
+                        String packageID = rs.getString("packageID");
+                        DroneIDLabel = new Label();
+                        DroneIDLabel.setText(id);
+                        dronesTableGrid.add(DroneIDLabel, 0, i);
+                        DroneIDLabel = new Label();
+                        DroneIDLabel.setText(location);
+                        dronesTableGrid.add(DroneIDLabel, 1, i);
+                        DroneIDLabel = new Label();
+                        DroneIDLabel.setText(currentDriver);
+                        dronesTableGrid.add(DroneIDLabel, 2, i);
+                        DroneIDLabel = new Label();
+                        DroneIDLabel.setText(packageID);
+                        dronesTableGrid.add(DroneIDLabel, 3, i);
+                        i++;
+	             }
+        } catch (SQLException ex) {
+	            // handle any errors
+	            System.out.println("SQLException: " + ex.getMessage());
+	            System.out.println("SQLState: " + ex.getSQLState());
+	            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        /*
         for(int row = 0 ; row < 10 ; row++)
         {
         DroneIDLabel = new Label();
         DroneIDLabel.setText(""+(row+1));
         dronesTableGrid.add( DroneIDLabel, 0, row+1);
         }
-        
+        */
         //DESTINATIONS
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Destination");
         dronesTableGrid.add( DroneIDLabel, 1, 0);
-        
+        /*
         for(int row = 0 ; row < 10 ; row++)
         {
         DroneIDLabel = new Label();
         DroneIDLabel.setText("City "+(row+1));
         dronesTableGrid.add( DroneIDLabel, 1, row+1);
         }
-        
+        */
         //DRIVER IDS
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Driver ID");
         dronesTableGrid.add( DroneIDLabel, 2, 0);
-        
+        /*
         for(int row = 0 ; row < 10 ; row++)
         {
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Driver "+(row+1));
         dronesTableGrid.add( DroneIDLabel, 2, row+1);
         }
-        
+        */
         //PACKAGE IDS
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Package ID");
         dronesTableGrid.add( DroneIDLabel, 3, 0);
-        
+        /*
         for(int row = 0 ; row < 10 ; row++)
         {
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Package "+(row+1));
         dronesTableGrid.add( DroneIDLabel, 3, row+1);
         }
-        
+        */
         //BATTERY LIFE
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Battery Life");
