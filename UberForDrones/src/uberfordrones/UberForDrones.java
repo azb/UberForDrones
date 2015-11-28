@@ -362,6 +362,12 @@ public class UberForDrones extends JApplet {
     public void subractSeconds() {
         if (seconds > 0) {
             seconds--;
+            
+            if (seconds == 0 && minutes > 0)
+            {
+            minutes--;
+            seconds = 59;
+            }
         }
     }
 }
