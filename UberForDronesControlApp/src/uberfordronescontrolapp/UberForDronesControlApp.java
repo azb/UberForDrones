@@ -21,6 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -86,13 +87,37 @@ public class UberForDronesControlApp extends JApplet {
         HBox dronesTable = new HBox();
         GridPane dronesTableGrid = new GridPane();
         
-        Canvas canvas = new Canvas(800,800);
+        Canvas canvas = new Canvas(600,600);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         
         
         Image image1 = new Image("/theMap.png", 800, 800, true, false);
+        Image mapMarker = new Image("/mapMarker.png", 800, 800, true, false);
         
         gc.drawImage(image1, 0,0);
+        
+        double[] drone_target_x = new double[10];
+        double[] drone_target_y = new double[10];
+        
+        for(int i = 0 ; i < 10 ; i++)
+        {
+        drone_target_x[i] = Math.random() * 600;
+        drone_target_y[i] = Math.random() * 400;
+        }
+        
+        for(int i = 0 ; i < 10 ; i++)
+        {
+        double dronex = Math.random() * 600;
+        double droney = Math.random() * 400;
+        
+        gc.setFill(Color.WHITE);
+        gc.fillRect(dronex-4,droney+32,50,20);
+        gc.setFill(Color.BLACK);
+        gc.fillText("Drone "+(i+1),dronex,droney+48);
+        gc.drawImage(mapMarker, dronex,droney,32,32);
+        gc.setFill(Color.BLUE);
+        gc.strokeLine(dronex + 16, droney + 32, drone_target_x[i], drone_target_y[i]);
+        }
         
         ImageView iv3 = new ImageView();
         iv3.setImage(image1);
