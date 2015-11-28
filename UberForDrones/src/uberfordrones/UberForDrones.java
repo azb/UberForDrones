@@ -63,25 +63,57 @@ public class UberForDrones extends JApplet {
 
 	    	    stmt = conn.createStatement();
 	    	    stmt.executeUpdate(
-	    	    		"CREATE TABLE States (" +
+	    	    		"CREATE TABLE DRIVER (" +
 	    	            "name VARCHAR(32)," +
-	    	    	    "capital VARCHAR(32)," +
-	    	    	    "population INTEGER" +
+	    	    	    "startLocation VARCHAR(32)," +
+	    	    	    "endLocation VARCHAR(32)," +
+                            "startTime TIME," +
+                            "balance FLOAT," +
+                            "currentPackageCount INTEGER," +
+                            "maxPackageCount INTEGER" +
 	    	            ")"
 	    	           );
-	    	    stmt.executeUpdate(
-	    	    		"INSERT INTO States " +
-	    	            "VALUES ('California', 'Sacramento', 39000000)," +
-	    	    	           "('Oregon', 'Salem', 4000000)," +
-	    	    	           "('Washington', 'Olympia', 7000000)"
-	    	            );	    
-	            rs = stmt.executeQuery("select * from states");
-	            while (rs.next()) {
-	                String stateName = rs.getString("name");
-	                int population = rs.getInt("population");
-	                String capital = rs.getString("capital");
-	                System.out.println(stateName + "\t" + capital + "\t" + population);
-	                }
+         stmt.executeUpdate(
+	    	    		"CREATE TABLE SENDER (" +
+	    	            "name VARCHAR(32)," +
+	    	    	    "location VARCHAR(32)" +
+	    	            ")"
+	    	           );
+         stmt.executeUpdate(
+	    	    		"CREATE TABLE RECIEVER (" +
+	    	            "name VARCHAR(32)," +
+	    	    	    "location VARCHAR(32)" +
+	    	            ")"
+	    	           );
+         stmt.executeUpdate(
+	    	    		"CREATE TABLE DRONE (" +
+	    	            "id VARCHAR(32)," +
+	    	    	    "startLocation VARCHAR(32)," +
+                            "endLocation VARCHAR(32)," +
+                            "currentDriver VARCHAR(32)" +
+	    	            ")"
+	    	           );
+	 stmt.executeUpdate(
+	    	    		"INSERT INTO DRIVER " +
+	    	            "VALUES ('Billy', 'Sacramento', 'Los Angeles'," +
+                              " '00:00:00', 0.0, 0, 2)," +
+	    	    	    "('Bob', 'Fremont', 'Los Angeles'," +
+                              " '00:30:00', 0.0, 0, 1)," +
+                            "('Joe', 'Sacramento', 'Fremont'," +
+                              " '00:45:00', 0.0, 0, 3)");
+	 rs = stmt.executeQuery("select * from DRIVER");
+	 while (rs.next()) {
+	         String driverName = rs.getString("name");
+                 String startLoc = rs.getString("startLocation");
+                 String endLoc = rs.getString("endLocation");
+                 java.sql.Time startTime = rs.getTime("startTime");
+                 float balance = rs.getFloat("balance");
+                 int curPkgCount = rs.getInt("currentPackageCount");
+                 int maxPkgCount = rs.getInt("maxPackageCount");
+	         System.out.println(driverName + "\t" + startLoc + "\t" +
+                         endLoc + "\t" + startTime.toString() + "\t" +
+                         balance + "\t" + curPkgCount + "\t" + maxPkgCount);
+	 }
 	     } catch (SQLException ex) {
 	            // handle any errors
 	            System.out.println("SQLException: " + ex.getMessage());
