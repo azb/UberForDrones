@@ -77,42 +77,7 @@ public class UberForDrones extends JApplet {
         Statement stmt = null;
         ResultSet rs = null;
 
-        try {
-            conn
-                    = DriverManager.getConnection(
-                            "jdbc:mysql://localhost:3306/test?"
-                            + "user=root&password="
-                    );
-
-            stmt = conn.createStatement();
-            stmt.executeUpdate(
-                    "CREATE TABLE States ("
-                    + "name VARCHAR(32),"
-                    + "capital VARCHAR(32),"
-                    + "population INTEGER"
-                    + ")"
-            );
-            stmt.executeUpdate(
-                    "INSERT INTO States "
-                    + "VALUES ('California', 'Sacramento', 39000000),"
-                    + "('Oregon', 'Salem', 4000000),"
-                    + "('Washington', 'Olympia', 7000000)"
-            );
-            rs = stmt.executeQuery("select * from states");
-            while (rs.next()) {
-                String stateName = rs.getString("name");
-                int population = rs.getInt("population");
-                String capital = rs.getString("capital");
-                System.out.println(stateName + "\t" + capital + "\t" + population);
-            }
-
-        } catch (SQLException ex) {
-            // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-        System.out.println("completed connection");
+        
 
 	    try {
 	            conn =
@@ -133,28 +98,33 @@ public class UberForDrones extends JApplet {
                             "maxPackageCount INTEGER" +
 	    	            ")"
 	    	           );
-         stmt.executeUpdate(
+	    	    stmt.executeUpdate(
 	    	    		"CREATE TABLE SENDER (" +
 	    	            "name VARCHAR(32)," +
 	    	    	    "location VARCHAR(32)" +
 	    	            ")"
 	    	           );
-         stmt.executeUpdate(
+	    	    stmt.executeUpdate(
 	    	    		"CREATE TABLE RECIEVER (" +
 	    	            "name VARCHAR(32)," +
 	    	    	    "location VARCHAR(32)" +
 	    	            ")"
 	    	           );
-         stmt.executeUpdate(
+	    	    stmt.executeUpdate(
 	    	    		"CREATE TABLE DRONE (" +
 	    	            "id VARCHAR(32)," +
-	    	    	    "startLocation VARCHAR(32)," +
-                            "endLocation VARCHAR(32)," +
+	    	    	    "location VARCHAR(32)," +
                             "currentDriver VARCHAR(32)," +
+                            "packageID INTEGER," +
                             "reciever VARCHAR(32)" +
 	    	            ")"
 	    	           );
-	 stmt.executeUpdate(
+	    	    stmt.executeUpdate(
+                                "CREATE TABLE PACKAGE (" +
+                            "id VARCHAR(32)," +
+                            "location VARCHAR(32)," +
+                            "endLocation VARCHAR(32),");
+	    	    stmt.executeUpdate(
 	    	    		"INSERT INTO DRIVER " +
 	    	            "VALUES ('Billy', 'Sacramento', 'Los Angeles'," +
                               " '00:00:00', 0.0, 0, 2)," +
