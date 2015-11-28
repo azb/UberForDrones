@@ -11,7 +11,7 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="UberForDrones.jar" size="755086" download="eager" />
+    <jar href="UberForDrones.jar" size="755705" download="eager" />
     <jar href="lib/mysql-connector-java-5.1.37-bin.jar" size="985603" download="eager" />
   </resources>
   <application-desc main-class="uberfordrones.UberForDrones"  name="UberForDrones" >
