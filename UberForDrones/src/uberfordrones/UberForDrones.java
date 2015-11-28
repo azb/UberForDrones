@@ -90,7 +90,8 @@ public class UberForDrones extends JApplet {
 	    	            "id VARCHAR(32)," +
 	    	    	    "startLocation VARCHAR(32)," +
                             "endLocation VARCHAR(32)," +
-                            "currentDriver VARCHAR(32)" +
+                            "currentDriver VARCHAR(32)," +
+                            "reciever VARCHAR(32)" +
 	    	            ")"
 	    	           );
 	 stmt.executeUpdate(
