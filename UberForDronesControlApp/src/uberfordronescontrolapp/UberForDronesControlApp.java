@@ -41,6 +41,7 @@ public class UberForDronesControlApp extends JApplet {
     private static final int JFXPANEL_WIDTH_INT = 1400;
     private static final int JFXPANEL_HEIGHT_INT = 600;
     private static JFXPanel fxContainer;
+    private fakeTime time = new fakeTime(0, 0, 0);
 
     /**
      * @param args the command line arguments
@@ -95,6 +96,49 @@ public class UberForDronesControlApp extends JApplet {
                 createScene();
             }
         });
+    }
+    
+    private void update() {
+       Connection conn = null;
+       Statement stmt = null;
+       ResultSet rs = null;
+       
+       try {
+          conn =
+	               DriverManager.getConnection(
+	            		           "jdbc:mysql://localhost:3306/test?" +
+	                               "user=root&password=MYSQL"
+	            		           );
+          
+          stmt = conn.createStatement();
+          /*
+          rs = stmt.executeQuery("select * from states");
+          while (rs.next()) {
+              String stateName = rs.getString("name");
+              int population = rs.getInt("population");
+              String capital = rs.getString("capital");
+              System.out.println(stateName + "\t" + capital + "\t" + population);
+          }
+          */
+       } catch (SQLException ex) {
+          // handle any errors
+          System.out.println("SQLException: " + ex.getMessage());
+          System.out.println("SQLState: " + ex.getSQLState());
+          System.out.println("VendorError: " + ex.getErrorCode());
+       }
+       time.increment(0, 0, 30);
+       System.out.println(time);
+    }
+    
+    private boolean checkStringIsNull(String s) {
+       try {
+          if (s.length() > 0) {
+            return false;
+          }
+       } catch (NullPointerException e) {
+          return true;
+       }
+       return false;
     }
     
     private void createScene() {
@@ -181,6 +225,13 @@ public class UberForDronesControlApp extends JApplet {
                         DroneIDLabel = new Label();
                         DroneIDLabel.setText(packageID);
                         dronesTableGrid.add(DroneIDLabel, 3, i);
+                        DroneIDLabel = new Label();
+                        if (checkStringIsNull(currentDriver)) {
+                           DroneIDLabel.setText("Flying");
+                        } else {
+                           DroneIDLabel.setText("Hitching");
+                        }
+                        dronesTableGrid.add(DroneIDLabel, 5, i);
                         i++;
 	             }
         } catch (SQLException ex) {
@@ -189,50 +240,21 @@ public class UberForDronesControlApp extends JApplet {
 	            System.out.println("SQLState: " + ex.getSQLState());
 	            System.out.println("VendorError: " + ex.getErrorCode());
         }
-        /*
-        for(int row = 0 ; row < 10 ; row++)
-        {
-        DroneIDLabel = new Label();
-        DroneIDLabel.setText(""+(row+1));
-        dronesTableGrid.add( DroneIDLabel, 0, row+1);
-        }
-        */
         //DESTINATIONS
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Destination");
         dronesTableGrid.add( DroneIDLabel, 1, 0);
-        /*
-        for(int row = 0 ; row < 10 ; row++)
-        {
-        DroneIDLabel = new Label();
-        DroneIDLabel.setText("City "+(row+1));
-        dronesTableGrid.add( DroneIDLabel, 1, row+1);
-        }
-        */
+        
         //DRIVER IDS
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Driver ID");
         dronesTableGrid.add( DroneIDLabel, 2, 0);
-        /*
-        for(int row = 0 ; row < 10 ; row++)
-        {
-        DroneIDLabel = new Label();
-        DroneIDLabel.setText("Driver "+(row+1));
-        dronesTableGrid.add( DroneIDLabel, 2, row+1);
-        }
-        */
+        
         //PACKAGE IDS
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Package ID");
         dronesTableGrid.add( DroneIDLabel, 3, 0);
-        /*
-        for(int row = 0 ; row < 10 ; row++)
-        {
-        DroneIDLabel = new Label();
-        DroneIDLabel.setText("Package "+(row+1));
-        dronesTableGrid.add( DroneIDLabel, 3, row+1);
-        }
-        */
+        
         //BATTERY LIFE
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Battery Life");
@@ -248,32 +270,21 @@ public class UberForDronesControlApp extends JApplet {
         //DRONE STATUS
         DroneIDLabel = new Label();
         DroneIDLabel.setText("Status");
-        dronesTableGrid.add( DroneIDLabel, 5, 0);
-        
-        for(int row = 0 ; row < 10 ; row++)
-        {
-        DroneIDLabel = new Label();
-        DroneIDLabel.setText("Flying");
-        dronesTableGrid.add( DroneIDLabel, 5, row+1);
-        }
-        
-        //DroneIDLabel.setText("Drone ID");
-        
-        //Label DroneIDLabel = new Label();
-        
+        dronesTableGrid.add( DroneIDLabel, 5, 0);        
         
         Button btn = new Button();
-        btn.setText("Say 'Hello World'");
+        btn.setText("Update");
         btn.setOnAction(new EventHandler<ActionEvent>() {
             
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
+                update();
             }
         });
         StackPane root = new StackPane();
         //root.getChildren().add(btn);
         root.getChildren().add(dronesTable);
+        root.getChildren().add(btn);
         
         fxContainer.setScene(new Scene(root));
     }
