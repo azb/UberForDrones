@@ -113,6 +113,62 @@ public class UberForDronesControlApp extends JApplet {
 	                               "user=root&password=MYSQL"
 	            		           );
           stmt = conn.createStatement();
+          // Drop off drones/packages and update drivers
+          System.out.println("Dropoffs");
+          rs = stmt.executeQuery("SELECT driver.name AS name, c.droneID AS " +
+                  "droneID, c.packageID, driver.currentPackageCount AS " +
+                  "currentPackageCount, driver.balance AS balance, " +
+                  "driver.endLocation AS endLocation FROM driver\n" +
+"	INNER JOIN ( SELECT package.id AS packageID, drone.id as droneID, " +
+                  "drone.currentDriver AS driver FROM drone\n" +
+"				INNER JOIN package ON package.id = drone.packageID) AS c\n" +
+"		ON c.driver = driver.name");
+          ArrayList<HashMap> parking = new ArrayList<>();
+          while (rs.next()) {
+             String name = rs.getString("name");
+             String droneID = rs.getString("droneID");
+             String packageID = rs.getString("packageID");
+             int packageCount = rs.getInt("currentPackageCount");
+             float balance = rs.getFloat("balance");
+             String endLocation = rs.getString("endLocation");
+             System.out.println(name + "\t" + droneID + "\t" + packageID + "\t" +
+                     packageCount + "\t" + balance + "\t" + endLocation);
+             HashMap<String, Object> map = new HashMap<>();
+             map.put("name", name);
+             map.put("droneID", droneID);
+             map.put("packageID", packageID);
+             map.put("packageCount", packageCount);
+             map.put("balance", balance);
+             map.put("endLocation", endLocation);
+             parking.add(map);
+          }
+          ListIterator parkIter = parking.listIterator();
+          while (parkIter.hasNext()) {
+             HashMap<String, Object> map = (HashMap<String, Object>) parkIter.next();
+             // Update driver
+             if (stmt.execute("UPDATE driver\n" +
+               "SET\n" +
+               "balance = " + ((float)map.get("balance") + 3) + ", currentPackageCount = " + 
+                     ((int)map.get("packageCount") - 1) + "\n" + "WHERE name = '" + 
+                     map.get("name") + "'")) {
+                System.out.println("Update failed");
+             }
+             // Update drone
+             if (stmt.execute("UPDATE drone\n" +
+               "SET\n" +
+               "location = '" + map.get("endLocation") + "', currentDriver = NULL, packageID = NULL\n" +
+               "WHERE id = '" + map.get("droneID") + "'")) {
+                System.out.println("Update failed");
+             }
+             // Update package
+             if (stmt.execute("UPDATE package\n" +
+               "SET\n" +
+               "location = '" + map.get("endLocation") + "'\n" +
+               "WHERE id = '" + map.get("packageID") + "'")) {
+                System.out.println("Update failed");
+             }
+          }
+          
           // Pair drones with packages
           System.out.println("Packages & Drones");
           rs = stmt.executeQuery("SELECT package.id AS packageID, drone.id AS droneID FROM package\n" +
@@ -211,10 +267,6 @@ public class UberForDronesControlApp extends JApplet {
                   System.out.println("Update failed");
              }
           }
-          
-          // Drop off drones/packages if stopped
-          
-          
        } catch (SQLException ex) {
           // handle any errors
           System.out.println("SQLException: " + ex.getMessage());
