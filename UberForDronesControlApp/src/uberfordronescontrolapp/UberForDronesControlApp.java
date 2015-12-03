@@ -63,9 +63,20 @@ public class UberForDronesControlApp extends JApplet {
     private static String[] drone_status = new String[100];
     private static double[] drone_battery_level = new double[100];
     
-    private static ArrayList<Label> DroneStatusLabels = new ArrayList<Label>();
+    private static String[] drone_drivers = new String[100];
+    private static String[] drone_package = new String[100];
+    private static String[] drone_destination = new String[100];
+            
+    private static ArrayList<Label> DroneIDLabels = new ArrayList<Label>();
+    private static ArrayList<Label> DroneDestinationLabels = new ArrayList<Label>();
+    private static ArrayList<Label> DroneDriverLabels = new ArrayList<Label>();
+    private static ArrayList<Label> DronePackageLabels = new ArrayList<Label>();
     private static ArrayList<Label> DroneBatteryLabels = new ArrayList<Label>();
+    private static ArrayList<Label> DroneStatusLabels = new ArrayList<Label>();
     
+    
+    private static int numOfDrones = 0;
+        
     /**
      * @param args the command line arguments
      */
@@ -175,6 +186,7 @@ public class UberForDronesControlApp extends JApplet {
              map.put("balance", balance);
              map.put("endLocation", endLocation);
              parking.add(map);
+             
           }
           ListIterator parkIter = parking.listIterator();
           while (parkIter.hasNext()) {
@@ -358,7 +370,7 @@ public class UberForDronesControlApp extends JApplet {
         
         gc.drawImage(image1, 0,0);
         
-        for(int i = 0 ; i < 10 ; i++)
+        for(int i = 0 ; i < numOfDrones ; i++)
         {
         //double dronex = Math.random() * 600;
         //double droney = Math.random() * 400;
@@ -451,79 +463,39 @@ public class UberForDronesControlApp extends JApplet {
         Label DroneIDLabel = new Label();
         DroneIDLabel.setText("Drone ID");
         dronesTableGrid.add( droneIDButton, 0, 0);
+        DroneIDLabels.add(DroneIDLabel);
         
-        Connection conn = null;
-	Statement stmt = null;
-        ResultSet rs = null;
-        try {
-	            conn =
-	               DriverManager.getConnection(
-	            		           "jdbc:mysql://localhost:3306/test?" +
-	                               "user=root&password="
-	            		           );
-                    stmt = conn.createStatement();
-                    rs = stmt.executeQuery("SELECT * FROM drone");
-                    int i = 1;
-                    while (rs.next()) {
-                        String id = rs.getString("id");
-	                String location = rs.getString("location");
-	                String currentDriver = rs.getString("currentDriver");
-                        String packageID = rs.getString("packageID");
-                        DroneIDLabel = new Label();
-                        DroneIDLabel.setText(id);
-                        dronesTableGrid.add(DroneIDLabel, 0, i);
-                        DroneIDLabel = new Label();
-                        DroneIDLabel.setText(location);
-                        dronesTableGrid.add(DroneIDLabel, 1, i);
-                        DroneIDLabel = new Label();
-                        DroneIDLabel.setText(currentDriver);
-                        dronesTableGrid.add(DroneIDLabel, 2, i);
-                        DroneIDLabel = new Label();
-                        DroneIDLabel.setText(packageID);
-                        dronesTableGrid.add(DroneIDLabel, 3, i);
-                        DroneIDLabel = new Label();
-                        if (checkStringIsNull(currentDriver)) {
-                           DroneIDLabel.setText("Flying");
-                        } else {
-                           DroneIDLabel.setText("Hitching");
-                        }
-                        dronesTableGrid.add(DroneIDLabel, 5, i);
-                        i++;
-	             }
-        } catch (SQLException ex) {
-	            // handle any errors
-	            System.out.println("SQLException: " + ex.getMessage());
-	            System.out.println("SQLState: " + ex.getSQLState());
-	            System.out.println("VendorError: " + ex.getErrorCode());
-        }
         //DESTINATIONS
         Button destinationButton = new Button();
         destinationButton.setText("Destination [v]");
         Label DestinationLabel = new Label();
         DestinationLabel.setText("Destination");
         dronesTableGrid.add( destinationButton, 1, 0);
+        DroneDestinationLabels.add(DestinationLabel);
         
         //DRIVER IDS
         Button driverIDButton = new Button();
         driverIDButton.setText("Driver ID [v]");
-        Label DriverIDLabel = new Label();
-        DriverIDLabel.setText("Driver ID");
+        Label DroneDriverLabel = new Label();
+        DroneDriverLabel.setText("Driver ID");
         dronesTableGrid.add( driverIDButton, 2, 0);
+        DroneDriverLabels.add(DroneDriverLabel);
         
         //PACKAGE IDS
         Button packageIDButton = new Button();
         packageIDButton.setText("Package ID [v]");
-        DroneIDLabel = new Label();
-        DroneIDLabel.setText("Package ID");
+        Label DronePackageLabel = new Label();
+        DronePackageLabel.setText("Package ID");
         dronesTableGrid.add(packageIDButton , 3, 0); //DroneIDLabel
+        DronePackageLabels.add(DronePackageLabel);
         
         //BATTERY LIFE
         Button sortButton = new Button();
         sortButton.setText("Battery [v]");
         Label DroneBatteryLabel = new Label();
         DroneBatteryLabel.setText("Battery Life");
-        DroneBatteryLabels.add(DroneBatteryLabel);        
         dronesTableGrid.add( sortButton, 4, 0); //DroneBatteryLabels.get(0)
+        DroneBatteryLabels.add(DroneBatteryLabel);    
         
         /*
         for(int row = 0 ; row < 10 ; row++)
@@ -543,21 +515,117 @@ public class UberForDronesControlApp extends JApplet {
         //dronesTableGrid.add( DroneStatusLabels.get(0), 5, 0);
         dronesTableGrid.add( statusButton, 5, 0); //DroneBatteryLabels.get(0)
         
-        for(int row = 0 ; row < 10 ; row++)
+        Connection conn = null;
+	Statement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+	            conn =
+	               DriverManager.getConnection(
+	            		           "jdbc:mysql://localhost:3306/test?" +
+	                               "user=root&password="
+	            		           );
+                    stmt = conn.createStatement();
+                    rs = stmt.executeQuery("SELECT * FROM drone");
+                    int i = 0;
+                    while (rs.next()) {
+                        i++;
+                    }
+                    numOfDrones = i;
+        }
+        catch (SQLException ex) {
+	            // handle any errors
+	            System.out.println("SQLException: " + ex.getMessage());
+	            System.out.println("SQLState: " + ex.getSQLState());
+	            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        
+        for(int row = 0 ; row < numOfDrones ; row++)
         {
+        DroneIDLabel = new Label();
+        DroneIDLabel.setText(""+row);
+        DroneIDLabels.add(DroneIDLabel);
+        
+        Label DroneDestinationLabel = new Label();
+        DroneDestinationLabel.setText("Location "+row);
+        DroneDestinationLabels.add(DroneDestinationLabel);
+        
+        DronePackageLabel = new Label();
+        DronePackageLabel.setText("Package "+(row+1));
+        DronePackageLabels.add(DronePackageLabel);
+        
+        DroneDriverLabel = new Label();
+        DroneDriverLabel.setText("Driver "+(row+1)); //drone_drivers[row]
+        DroneDriverLabels.add(DroneDriverLabel);
+        
         DroneStatusLabel = new Label();
         DroneStatusLabel.setText(drone_status[row]);
         DroneStatusLabels.add(DroneStatusLabel);
+        
         DroneBatteryLabel = new Label();
         DroneBatteryLabel.setText(""+(int)drone_battery_level[row]+"%");
         DroneBatteryLabels.add(DroneBatteryLabel);
         }
-        
-        for(int row = 0 ; row < 10 ; row++)
+                
+        //if (1==0)
+        for(int row = 0 ; row < numOfDrones ; row++)
         {
-        dronesTableGrid.add( DroneStatusLabels.get(row+1), 5, row+1);
+        dronesTableGrid.add( DroneIDLabels.get(row+1), 0, row+1);
+        dronesTableGrid.add( DroneDestinationLabels.get(row+1), 1, row+1);
+        dronesTableGrid.add( DroneDriverLabels.get(row+1), 2, row+1);
+        dronesTableGrid.add( DronePackageLabels.get(row+1), 3, row+1);
         dronesTableGrid.add( DroneBatteryLabels.get(row+1), 4, row+1);
+        dronesTableGrid.add( DroneStatusLabels.get(row+1), 5, row+1);
         }
+        
+        try {
+	            conn =
+	               DriverManager.getConnection(
+	            		           "jdbc:mysql://localhost:3306/test?" +
+	                               "user=root&password="
+	            		           );
+                    stmt = conn.createStatement();
+                    rs = stmt.executeQuery("SELECT * FROM drone");
+                    int i = 1;
+                    while (rs.next()) {
+                        String id = rs.getString("id");
+	                String location = rs.getString("location");
+	                String currentDriver = rs.getString("currentDriver");
+                        String packageID = rs.getString("packageID");
+                        //DroneIDLabel = new Label();
+                        //DroneIDLabel.setText(id);
+                        //dronesTableGrid.add(DroneIDLabel, 0, i);
+                        DroneIDLabels.get(i).setText(id); ///return later
+                        //DroneIDLabel = new Label();
+                        //DroneIDLabel.setText(location);
+                        //dronesTableGrid.add(DroneIDLabel, 1, i);
+                        DroneDestinationLabels.get(i).setText(location);
+                        //DroneIDLabel = new Label();
+                        //DroneIDLabel.setText(currentDriver);
+                        //dronesTableGrid.add(DroneIDLabel, 2, i);
+                        DronePackageLabels.get(i).setText(packageID);
+                        //DroneIDLabel = new Label();
+                        //DroneIDLabel.setText(packageID);
+                        //dronesTableGrid.add(DroneIDLabel, 3, i);
+                        DroneDriverLabels.get(i).setText(currentDriver);
+                        DroneIDLabel = new Label();
+                        if (checkStringIsNull(currentDriver)) {
+                           DroneIDLabel.setText("Flying");
+                        } else {
+                           DroneIDLabel.setText("Hitching");
+                        }
+                        //dronesTableGrid.add(DroneIDLabel, 5, i);
+                        //DroneDriverLabels.get(i+1).setText(""+i);
+                        i++;
+	             }
+        } catch (SQLException ex) {
+	            // handle any errors
+	            System.out.println("SQLException: " + ex.getMessage());
+	            System.out.println("SQLState: " + ex.getSQLState());
+	            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        
+        
         
         Button btn = new Button();
         btn.setText("Update");
