@@ -15,6 +15,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -642,8 +644,6 @@ public class UberForDronesControlApp extends JApplet {
 	            System.out.println("VendorError: " + ex.getErrorCode());
         }
         
-        
-        
         Button btn = new Button();
         btn.setText("Update");
         btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -653,9 +653,36 @@ public class UberForDronesControlApp extends JApplet {
                 update();
             }
         });
+        
+                HBox bottomBar = new HBox();
+        
+        Button addDroneButton = new Button();
+        addDroneButton.setText("Add Drone");
+        addDroneButton.setOnAction(new EventHandler<ActionEvent>() {
+            
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Connection conn = null;
+                    Statement stmt = null;
+                    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test?user=root&password=");
+                    stmt = conn.createStatement();
+                    stmt.executeUpdate("INSERT INTO drone VALUE ('1', 'City3', NULL, NULL)");
+                } catch (SQLException ex) {
+                    Logger.getLogger(UberForDronesControlApp.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                addDrone(numOfDrones+1);
+                update();
+            }
+        });
+        
         StackPane root = new StackPane();
         //root.getChildren().add(btn);
-        overlord.getChildren().add(btn);
+        bottomBar.getChildren().addAll(btn,addDroneButton);
+        overlord.getChildren().add(bottomBar);
+        
+        
+        //root.getChildren().add(btn);
         
         dronesTab.setContent(overlord);
         
@@ -691,4 +718,39 @@ public class UberForDronesControlApp extends JApplet {
 		double output = Math.sqrt((xchange*xchange)+(ychange*ychange));
 		return output;
 	}
+    
+    public void addDrone(int row)
+    {
+        Label DroneIDLabel = new Label();
+        DroneIDLabel.setText(""+row);
+        DroneIDLabels.add(DroneIDLabel);
+        
+        Label DroneDestinationLabel = new Label();
+        DroneDestinationLabel.setText("Location "+row);
+        DroneDestinationLabels.add(DroneDestinationLabel);
+        
+        Label DronePackageLabel = new Label();
+        DronePackageLabel.setText("Package "+(row+1));
+        DronePackageLabels.add(DronePackageLabel);
+        
+        Label DroneDriverLabel = new Label();
+        DroneDriverLabel.setText("Driver "+(row+1)); //drone_drivers[row]
+        DroneDriverLabels.add(DroneDriverLabel);
+        
+        Label DroneStatusLabel = new Label();
+        DroneStatusLabel.setText(drone_status[row]);
+        DroneStatusLabels.add(DroneStatusLabel);
+        
+        Label DroneBatteryLabel = new Label();
+        DroneBatteryLabel.setText(""+(int)drone_battery_level[row]+"%");
+        DroneBatteryLabels.add(DroneBatteryLabel);
+        /*
+        dronesTableGrid.add( DroneIDLabels.get(row), 0, row);
+        dronesTableGrid.add( DroneDestinationLabels.get(row), 1, row);
+        dronesTableGrid.add( DroneDriverLabels.get(row), 2, row);
+        dronesTableGrid.add( DronePackageLabels.get(row), 3, row);
+        dronesTableGrid.add( DroneBatteryLabels.get(row), 4, row);
+        dronesTableGrid.add( DroneStatusLabels.get(row), 5, row);
+        */
+    }
 }
