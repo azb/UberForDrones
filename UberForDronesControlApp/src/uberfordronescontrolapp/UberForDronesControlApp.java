@@ -516,10 +516,13 @@ public class UberForDronesControlApp extends JApplet {
         */
         
         //DRONE STATUS
+        Button statusButton = new Button();
+        statusButton.setText("Status [v]");
         Label DroneStatusLabel = new Label();
         DroneStatusLabel.setText("Status");
         DroneStatusLabels.add(DroneStatusLabel);
-        dronesTableGrid.add( DroneStatusLabels.get(0), 5, 0);
+        //dronesTableGrid.add( DroneStatusLabels.get(0), 5, 0);
+        dronesTableGrid.add( statusButton, 5, 0); //DroneBatteryLabels.get(0)
         
         for(int row = 0 ; row < 10 ; row++)
         {
