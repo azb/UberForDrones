@@ -46,7 +46,7 @@ import javax.swing.UIManager;
  */
 public class UberForDronesControlApp extends JApplet {
    
-   private String password = "MYSQL";
+   private String password = "";
     
     private static final int JFXPANEL_WIDTH_INT = 1300;
     private static final int JFXPANEL_HEIGHT_INT = 630;
