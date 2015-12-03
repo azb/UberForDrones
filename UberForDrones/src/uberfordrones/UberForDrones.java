@@ -252,11 +252,11 @@ public class UberForDrones extends JApplet {
          */
 
         Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(2500),
+                Duration.millis(500),
                 ae -> subractSeconds()));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
-
+        
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -266,8 +266,9 @@ public class UberForDrones extends JApplet {
                 gc.setFill(Color.FORESTGREEN);
                 gc.setTextAlign(TextAlignment.CENTER);
                 gc.setFont(Font.font("Verdana", 20));
-                gc.fillText(minutes + ":" + seconds, 100, 30);
-
+                String tstr = "";
+                if (seconds < 10) tstr = "0";
+                gc.fillText(minutes + ":" + tstr  + seconds, 100, 30);
                 //gc.fillOval(x.doubleValue(),y.doubleValue(),D,D);
             }
         };
@@ -283,11 +284,7 @@ public class UberForDrones extends JApplet {
         ImageView iv3 = new ImageView();
         iv3.setImage(image1);
 
-        vpane.getChildren().add(iv3);
-        vpane.getChildren().add(theLabel);
-
-        vpane.getChildren().add(buttonHBox);
-
+        
         
         overlord.getChildren().add(vpane);
 
@@ -297,22 +294,45 @@ public class UberForDrones extends JApplet {
         
         TextField userNameInput = new TextField();
                 
-        button1.setText("Create Account");
-        button1.setOnAction(new EventHandler<ActionEvent>() {
+        Button createAccountButton = new Button();
+        Button loginButton = new Button();
+        
+        createAccountButton.setText("Create Account");
+        createAccountButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
+                vpane.getChildren().remove(loginButton);
+                vpane.getChildren().remove(createAccountButton);
+                vpane.getChildren().remove(userNameInput);
                 
+                vpane.getChildren().add(iv3);
+                vpane.getChildren().add(theLabel);
+
+                vpane.getChildren().add(buttonHBox);
             }
         });
-        button1.setText("Login");
-        button1.setOnAction(new EventHandler<ActionEvent>() {
+        loginButton.setText("Login");
+        loginButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
+                vpane.getChildren().remove(loginButton);
+                vpane.getChildren().remove(createAccountButton);
+                vpane.getChildren().remove(userNameInput);
                 
+                vpane.getChildren().add(iv3);
+                vpane.getChildren().add(theLabel);
+
+                vpane.getChildren().add(buttonHBox);
+
             }
         });
+        
+        
+        vpane.getChildren().add(userNameInput);
+        vpane.getChildren().add(createAccountButton);
+        vpane.getChildren().add(loginButton);
 
         /*
          class SayHello extends TimerTask {
