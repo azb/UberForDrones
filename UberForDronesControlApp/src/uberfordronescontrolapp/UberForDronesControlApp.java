@@ -155,7 +155,7 @@ public class UberForDronesControlApp extends JApplet {
           conn =
 	               DriverManager.getConnection(
 	            		           "jdbc:mysql://localhost:3306/test?" +
-	                               "user=root&password="
+	                               "user=root&password=MYSQL"
 	            		           );
           stmt = conn.createStatement();
           // Drop off drones/packages and update drivers
@@ -264,11 +264,11 @@ public class UberForDronesControlApp extends JApplet {
              String startTime = rs.getString("time");
              int currentPackageCount = rs.getInt("currentPackageCount");
              int maxPackageCount = rs.getInt("maxPackagecount");
-             System.out.println(name + "\t" + id + "\t" + startTime + "\t" +
-                     currentPackageCount + "\t" + maxPackageCount);
-             System.out.println("------------------");
-             if (time.earlierOrEqual(new fakeTime(startTime)) && maxPackageCount
+             if (time.earlierOrEqual(startTime) && maxPackageCount
                      > currentPackageCount) {
+                System.out.println(name + "\t" + id + "\t" + startTime + "\t" +
+                     currentPackageCount + "\t" + maxPackageCount);
+                System.out.println("------------------");
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("name", name);
                 map.put("id", id);
@@ -538,7 +538,7 @@ public class UberForDronesControlApp extends JApplet {
 	            conn =
 	               DriverManager.getConnection(
 	            		           "jdbc:mysql://localhost:3306/test?" +
-	                               "user=root&password="
+	                               "user=root&password=MYSQL"
 	            		           );
                     stmt = conn.createStatement();
                     rs = stmt.executeQuery("SELECT * FROM drone");
@@ -597,7 +597,7 @@ public class UberForDronesControlApp extends JApplet {
 	            conn =
 	               DriverManager.getConnection(
 	            		           "jdbc:mysql://localhost:3306/test?" +
-	                               "user=root&password="
+	                               "user=root&password=MYSQL"
 	            		           );
                     stmt = conn.createStatement();
                     rs = stmt.executeQuery("SELECT * FROM drone");

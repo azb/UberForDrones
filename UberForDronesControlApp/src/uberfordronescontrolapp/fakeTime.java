@@ -69,6 +69,10 @@ public class fakeTime {
       return false;
    }
    
+   public boolean earlierOrEqual(String s) {
+      return this.earlierOrEqual(new fakeTime(s));
+   }
+   
    public int hours() {
       return hours;
    }
