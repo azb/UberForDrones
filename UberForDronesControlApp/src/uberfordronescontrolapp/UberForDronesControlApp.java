@@ -45,6 +45,8 @@ import javax.swing.UIManager;
  * @author Arthur
  */
 public class UberForDronesControlApp extends JApplet {
+   
+   private String password = "MYSQL";
     
     private static final int JFXPANEL_WIDTH_INT = 1300;
     private static final int JFXPANEL_HEIGHT_INT = 630;
@@ -155,7 +157,7 @@ public class UberForDronesControlApp extends JApplet {
           conn =
 	               DriverManager.getConnection(
 	            		           "jdbc:mysql://localhost:3306/test?" +
-	                               "user=root&password=MYSQL"
+	                               "user=root&password=" + password
 	            		           );
           stmt = conn.createStatement();
           // Drop off drones/packages and update drivers
@@ -538,7 +540,7 @@ public class UberForDronesControlApp extends JApplet {
 	            conn =
 	               DriverManager.getConnection(
 	            		           "jdbc:mysql://localhost:3306/test?" +
-	                               "user=root&password=MYSQL"
+	                               "user=root&password=" + password
 	            		           );
                     stmt = conn.createStatement();
                     rs = stmt.executeQuery("SELECT * FROM drone");
@@ -597,7 +599,7 @@ public class UberForDronesControlApp extends JApplet {
 	            conn =
 	               DriverManager.getConnection(
 	            		           "jdbc:mysql://localhost:3306/test?" +
-	                               "user=root&password=MYSQL"
+	                               "user=root&password=" + password
 	            		           );
                     stmt = conn.createStatement();
                     rs = stmt.executeQuery("SELECT * FROM drone");
