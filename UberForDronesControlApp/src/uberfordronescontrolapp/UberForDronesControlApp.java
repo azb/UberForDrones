@@ -313,6 +313,21 @@ public class UberForDronesControlApp extends JApplet {
                   System.out.println("Update failed");
              }
           }
+          
+          // Update GUI values
+          rs = stmt.executeQuery("SELECT * FROM drone");
+          int i = 1;
+          while (rs.next()) {
+             String id = rs.getString("id");
+             String location = rs.getString("location");
+             String currentDriver = rs.getString("currentDriver");
+             String packageID = rs.getString("packageID");
+             DroneIDLabels.get(i).setText(id); ///return later
+             DroneDestinationLabels.get(i).setText(location);
+             DronePackageLabels.get(i).setText(packageID);
+             DroneDriverLabels.get(i).setText(currentDriver);
+             i++;
+          }
        } catch (SQLException ex) {
           // handle any errors
           System.out.println("SQLException: " + ex.getMessage());
