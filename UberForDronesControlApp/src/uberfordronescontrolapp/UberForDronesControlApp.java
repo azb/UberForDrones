@@ -25,6 +25,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -32,6 +34,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -43,8 +46,8 @@ import javax.swing.UIManager;
  */
 public class UberForDronesControlApp extends JApplet {
     
-    private static final int JFXPANEL_WIDTH_INT = 1400;
-    private static final int JFXPANEL_HEIGHT_INT = 800;
+    private static final int JFXPANEL_WIDTH_INT = 1300;
+    private static final int JFXPANEL_HEIGHT_INT = 630;
     private static JFXPanel fxContainer;
     private fakeTime time = new fakeTime(0, 0, 0);
 
@@ -320,11 +323,27 @@ public class UberForDronesControlApp extends JApplet {
     }
     
     private void createScene() {
+        TabPane tabPane = new TabPane();
+        Tab dronesTab = new Tab();
+        dronesTab.setText("Drones");
+        dronesTab.setClosable(false);
         
+        Tab usersTab = new Tab();
+        usersTab.setText("Users");
+        usersTab.setClosable(false);
+        
+        Tab packagesTab = new Tab();
+        packagesTab.setText("Packages");
+        packagesTab.setClosable(false);
+        
+        //dronesTab.setContent(new Rectangle(200,200, Color.LIGHTSTEELBLUE));
+        
+        tabPane.getTabs().addAll(dronesTab,usersTab,packagesTab);
+
         VBox overlord = new VBox();
         HBox dronesTable = new HBox();
         GridPane dronesTableGrid = new GridPane();
-        dronesTableGrid.setMinWidth(700);
+        dronesTableGrid.setMinWidth(670);
         overlord.getChildren().add(dronesTable);
         
         Canvas canvas = new Canvas(600,600);
@@ -440,7 +459,7 @@ public class UberForDronesControlApp extends JApplet {
 	            conn =
 	               DriverManager.getConnection(
 	            		           "jdbc:mysql://localhost:3306/test?" +
-	                               "user=root&password=MYSQL"
+	                               "user=root&password="
 	            		           );
                     stmt = conn.createStatement();
                     rs = stmt.executeQuery("SELECT * FROM drone");
@@ -486,7 +505,7 @@ public class UberForDronesControlApp extends JApplet {
         
         //DRIVER IDS
         Button driverIDButton = new Button();
-        driverIDButton.setText("Package ID [v]");
+        driverIDButton.setText("Driver ID [v]");
         Label DriverIDLabel = new Label();
         DriverIDLabel.setText("Driver ID");
         dronesTableGrid.add( driverIDButton, 2, 0);
@@ -552,7 +571,10 @@ public class UberForDronesControlApp extends JApplet {
         StackPane root = new StackPane();
         //root.getChildren().add(btn);
         overlord.getChildren().add(btn);
-        root.getChildren().add(overlord);
+        
+        dronesTab.setContent(overlord);
+        
+        root.getChildren().add(tabPane);
         
         
         fxContainer.setScene(new Scene(root));
