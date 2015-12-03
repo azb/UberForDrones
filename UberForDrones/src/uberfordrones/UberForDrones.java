@@ -44,6 +44,7 @@ import javafx.util.Duration;
 import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.canvas.*;
+import javafx.scene.control.TextField;
 import javafx.scene.text.TextAlignment;
 
 public class UberForDrones extends JApplet {
@@ -76,8 +77,6 @@ public class UberForDrones extends JApplet {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
-
-        
 
 	    try {
 	            conn =
@@ -295,6 +294,25 @@ public class UberForDrones extends JApplet {
         buttonHBox.setAlignment(Pos.CENTER);
 
         fxContainer.setScene(new Scene(overlord));
+        
+        TextField userNameInput = new TextField();
+                
+        button1.setText("Create Account");
+        button1.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                
+            }
+        });
+        button1.setText("Login");
+        button1.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                
+            }
+        });
 
         /*
          class SayHello extends TimerTask {
