@@ -29,6 +29,13 @@ public class fakeTime {
       fixValues();
    }
    
+   public fakeTime(String s) {
+      hours = Integer.parseInt(s.substring(0,2));
+      minutes = Integer.parseInt(s.substring(3,5));
+      seconds = Integer.parseInt(s.substring(6,8));
+      fixValues();
+   }
+   
    /**
     * Add time values to the fakeTime object. Will automatically adjust values
     * if they overflow.
@@ -49,6 +56,29 @@ public class fakeTime {
       seconds = seconds % 60;
       minutes = minutes % 60;
       hours = hours % 24;
+   }
+   
+   public boolean earlierOrEqual(fakeTime other) {
+      if (hours <= other.hours()){
+         if (minutes <= other.minutes()) {
+            if (seconds <= other.seconds()) {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+   
+   public int hours() {
+      return hours;
+   }
+   
+   public int minutes() {
+      return minutes;
+   }
+   
+   public int seconds() {
+      return seconds;
    }
    
    @Override

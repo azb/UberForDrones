@@ -12,6 +12,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ListIterator;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
@@ -109,24 +112,116 @@ public class UberForDronesControlApp extends JApplet {
 	            		           "jdbc:mysql://localhost:3306/test?" +
 	                               "user=root&password=MYSQL"
 	            		           );
-          
           stmt = conn.createStatement();
-          /*
-          rs = stmt.executeQuery("select * from states");
+          // Pair drones with packages
+          System.out.println("Packages & Drones");
+          rs = stmt.executeQuery("SELECT package.id AS packageID, drone.id AS droneID FROM package\n" +
+"	INNER JOIN drone\n" +
+"		ON drone.location = package.location\n" +
+"	WHERE drone.packageID IS NULL AND NOT package.location = package.endLocation");
+          ArrayList<String> drones = new ArrayList<String>();
+          ArrayList<String> packages = new ArrayList<String>();
           while (rs.next()) {
-              String stateName = rs.getString("name");
-              int population = rs.getInt("population");
-              String capital = rs.getString("capital");
-              System.out.println(stateName + "\t" + capital + "\t" + population);
+             String packageID = rs.getString("packageID");
+             String droneID = rs.getString("droneID");
+             System.out.println(packageID + "\t" + droneID);
+             if (packages.indexOf(packageID) == -1 && drones.indexOf(droneID) == -1)
+             {
+                drones.add(droneID);
+                packages.add(packageID);
+             }
           }
-          */
+          // Iterate over the filetered drone-package pairs and insert them
+          ListIterator dronesIt = drones.listIterator();
+          ListIterator packageIt = packages.listIterator();
+          while (dronesIt.hasNext()) {
+             if (stmt.execute("UPDATE drone\n" +
+               "SET\n" +
+               "packageID = '" + packageIt.next() + "'\n" +
+               "WHERE id = '" + dronesIt.next() + "'")) {
+                  System.out.println("Update failed!");
+             }
+          }
+          
+          // Get drones and drivers that match, set to driving
+          System.out.println("Drones & Drivers");
+          rs = stmt.executeQuery("SELECT driver.name AS name, c.id AS id, " +
+                  "driver.startTime AS time, driver.currentPackageCount AS " +
+                  "currentPackageCount, driver.maxPackageCount AS " +
+                  "maxPackageCount  FROM driver\n" +
+"	INNER JOIN ( SELECT package.endLocation AS endLocation, drone.id as id FROM drone\n" +
+"				INNER JOIN package ON package.id = drone.packageID\n" +
+"				WHERE NOT drone.location = 'driving' AND NOT package.location = 'driving') AS c\n" +
+"		ON c.endLocation = driver.endLocation\n" +
+"WHERE driver.currentPackageCount < driver.maxPackageCount");
+          ArrayList<HashMap<String, Object>> dronesNdrivers = new ArrayList<>();
+          HashMap<String, Boolean> droneCount = new HashMap<>();
+          while (rs.next()) {
+             String name = rs.getString("name");
+             String id = rs.getString("id");
+             String startTime = rs.getString("time");
+             int currentPackageCount = rs.getInt("currentPackageCount");
+             int maxPackageCount = rs.getInt("maxPackagecount");
+             System.out.println(name + "\t" + id + "\t" + startTime + "\t" +
+                     currentPackageCount + "\t" + maxPackageCount);
+             System.out.println("------------------");
+             if (time.earlierOrEqual(new fakeTime(startTime)) && maxPackageCount
+                     > currentPackageCount) {
+                HashMap<String, Object> map = new HashMap<String, Object>();
+                map.put("name", name);
+                map.put("id", id);
+                map.put("startTime", startTime);
+                map.put("currentPackageCount", currentPackageCount);
+                map.put("maxPackageCount", maxPackageCount);
+                dronesNdrivers.add(map);
+                droneCount.put(id, Boolean.FALSE);
+             }             
+          }
+          ListIterator dNdIter = dronesNdrivers.listIterator();
+          // Go through the possible combination of drones and drivers
+          while (dNdIter.hasNext()) {
+             HashMap<String, Object> map = (HashMap<String, Object>) dNdIter.next();
+             if ((int)map.get("currentPackageCount") < (int)map.get("maxPackageCount")) {
+                if (!droneCount.get(map.get("id"))) {
+                   if (stmt.execute("UPDATE drone\n" +
+               "SET\n" +
+               "location = 'driving', currentDriver = '" + map.get("name") + "'\n" +
+               "WHERE id = '" + map.get("id") + "'")) {
+                        System.out.println("Update failed!");
+                   }
+                   map.replace("currentPackageCount", ((int)map.get("currentPackageCount") + 1));
+                   droneCount.replace((String)map.get("id"), true);
+               }
+             }
+          }
+          // Update the location of all packages 'moved'
+          if (stmt.execute("UPDATE package\n" +
+            "SET\n" +
+            "location = 'driving'\n" +
+            "WHERE id in (SELECT packageID FROM drone WHERE location = 'driving')")) {
+             System.out.print("Update failed");
+          }
+          dNdIter = dronesNdrivers.listIterator(0);
+          while (dNdIter.hasNext()) {
+             HashMap<String, Object> map = (HashMap<String, Object>) dNdIter.next();
+             if (stmt.execute("UPDATE driver\n" +
+               "SET\n" +
+               "currentPackageCount = " + map.get("currentPackageCount") + "\n" +
+               "WHERE name = '"+ map.get("name") + "'")) {
+                  System.out.println("Update failed");
+             }
+          }
+          
+          // Drop off drones/packages if stopped
+          
+          
        } catch (SQLException ex) {
           // handle any errors
           System.out.println("SQLException: " + ex.getMessage());
           System.out.println("SQLState: " + ex.getSQLState());
           System.out.println("VendorError: " + ex.getErrorCode());
        }
-       time.increment(0, 0, 30);
+       time.increment(0, 30, 0);
        System.out.println(time);
     }
     
